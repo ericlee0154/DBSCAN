@@ -3,7 +3,7 @@
 DBSCAN::DBSCAN(void) {}
 DBSCAN::DBSCAN(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_ ): minPts(minPts_), eps(eps_), points(points_) { }
 
-void DBSCAN::runDBSCANTask()
+void DBSCAN::RunDBSCANTask()
 {
     std::vector<CPoint2D>::iterator iter;
     int currentClusterID = 1;
@@ -12,21 +12,23 @@ void DBSCAN::runDBSCANTask()
     {
         if (iter->clusterID == 0)
         {
-            std::vector<int> neighborPtsIndex = regionQuery(*iter);
+            std::vector<int> neighborPtsIndex = RegionQuery(*iter);
 
             if ( neighborPtsIndex.size() < minPts - 1)  // minus 1 to remove counting center point
                 iter->clusterID = -1;       // Noise Point
             else
             {
                 iter->clusterID = currentClusterID; // Assign current point's clusterID
-                expandCluster(*iter, &currentClusterID, neighborPtsIndex);
+                ExpandCluster(*iter, &currentClusterID, neighborPtsIndex);
                 currentClusterID = currentClusterID + 1;    // Finish current cluster, move to next cluster
             }
         }
     }   // End of for-loop
+
+    // Sorted Objects
 }
 
-void DBSCAN::expandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<int> neighborPtsIndex)
+void DBSCAN::ExpandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<int> neighborPtsIndex)
 {
     std::vector<int>::iterator iter_clus;
 
@@ -38,7 +40,7 @@ void DBSCAN::expandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<i
     // Assign current point into current cluster
     for (int i = 0; i < neighborPtsIndex.size(); i++)
     {
-        std::vector<int> neighborPtsIndex_ext = regionQuery(points.at(neighborPtsIndex[i]));
+        std::vector<int> neighborPtsIndex_ext = RegionQuery(points.at(neighborPtsIndex[i]));
 
         if (neighborPtsIndex_ext.size() >= minPts -1)   // minus 1 to remove counting center point
         {
@@ -57,7 +59,7 @@ void DBSCAN::expandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<i
     }   // Ending of for-loop
 };
 
-std::vector<int> DBSCAN::regionQuery (CPoint2D currentPoint)
+std::vector<int> DBSCAN::RegionQuery (CPoint2D currentPoint)
 {
     std::vector<int> neighborPtsIndex;
     std::vector<CPoint2D>::iterator iter;
@@ -68,7 +70,7 @@ std::vector<int> DBSCAN::regionQuery (CPoint2D currentPoint)
         // Not count current point
         if (currentPoint.x != iter->x && currentPoint.y != iter->y)
         {
-            if (calculateDistance(currentPoint, *iter) <= eps*eps)
+            if (CalculateDistance(currentPoint, *iter) <= eps*eps)
             {
                 neighborPtsIndex.push_back(index);
             }
@@ -78,7 +80,9 @@ std::vector<int> DBSCAN::regionQuery (CPoint2D currentPoint)
     return neighborPtsIndex;
 };
 
-inline float DBSCAN::calculateDistance(CPoint2D& currentPoint, CPoint2D& targetPoint)
+inline float DBSCAN::CalculateDistance(CPoint2D& currentPoint, CPoint2D& targetPoint)
 {
     return pow(currentPoint.x - targetPoint.x,2) + pow(currentPoint.y - targetPoint.y,2);
 };
+
+

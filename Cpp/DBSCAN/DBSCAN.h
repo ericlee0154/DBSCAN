@@ -15,15 +15,16 @@ class DBSCAN{
 
     ~DBSCAN() {};   // Original destructor for DBSCAN
     
-    void runDBSCANTask();
-    void expandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<int> neighborPtsIndex);
-    std::vector<int> regionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
+    void RunDBSCANTask();
+    void ExpandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<int> neighborPtsIndex);
+    std::vector<int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     
-    inline float calculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
+    std::vector<std::vector<CPoint2D>> ObjectSorted(); 
+    inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
 
-    int getNumofPoints() const { return points.size(); }
-    int getEpsilon() const {return eps; }
-    const std::vector<CPoint2D>& getPoints() const { return points; }
+    int GetNumofPoints() const { return points.size(); }
+    int GetEpsilon() const {return eps; }
+    const std::vector<CPoint2D>& GetPoints() const { return points; }
 
 
   private:
