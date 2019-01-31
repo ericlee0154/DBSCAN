@@ -1,13 +1,19 @@
 #include "ObjectClustering.h"
 
 ObjectClustering::ObjectClustering(void) { }
-ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_ ):minPts(minPts_), eps(eps_), points(points_) { }
+ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_):
+    minPts(minPts_),
+    eps(eps_), 
+    points(points_),
+    objectSortedID () { }
 
 
+void ObjectClustering::RunObjClusTask()
+{
+    
+}
 
-
-
-void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D> points)
+void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D> points, std::vector<std::vector<int>> objectSortedIndex)
 {
     std::vector<CPoint2D>::iterator iter;
     int currentClusterID = 1;
@@ -23,15 +29,16 @@ void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint
             else
             {
                 iter->clusterID = currentClusterID; // Assign current point's clusterID
-                ExpandCluster(*iter, &currentClusterID, neighborPtsIndex);
+                ExpandCluster(&currentClusterID, neighborPtsIndex);
                 currentClusterID = currentClusterID + 1;    // Finish current cluster, move to next cluster
             }
         }
     }   // End of for-loop
+
 }
 
 
-void ObjectClustering::ExpandCluster(CPoint2D& currentPoint, int *clusterID, std::vector<int> neighborPtsIndex, std::vector<std::vector<int>> objectSortedIndex)
+void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int> neighborPtsIndex)
 {
     std::vector<int>::iterator iter_clus;
 
