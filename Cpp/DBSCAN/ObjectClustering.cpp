@@ -10,10 +10,14 @@ ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector
 
 void ObjectClustering::RunObjClusTask()
 {
+    DBSCAN(minPts, eps, points);
+    // Take sorted outside. Because we may want to track object's ID.
+
+
     
 }
 
-void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D> points, std::vector<std::vector<int>> objectSortedIndex)
+void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points)
 {
     std::vector<CPoint2D>::iterator iter;
     int currentClusterID = 1;
@@ -36,6 +40,12 @@ void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint
     }   // End of for-loop
 
 }
+
+void ObjectClustering::LabelObjects(std::vector<CPoint2D>& points_, std::vector<std::vector<int>>& objectSortedID)
+{
+
+}
+
 
 
 void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int> neighborPtsIndex)

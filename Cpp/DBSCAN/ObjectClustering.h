@@ -16,12 +16,14 @@ class ObjectClustering{
     ~ObjectClustering() {};   // Original destructor for DBSCAN
     
     void RunObjClusTask();
-    void DBSCAN(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_, std::vector<std::vector<int>> objectSortedIndex_);
+    void DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points);
     void ExpandCluster(int *clusterID, std::vector<int> neighborPtsIndex);
     std::vector<int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
-    // potential functions    
-    inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
+    // potential functions
+    void LabelObjects(std::vector<CPoint2D>& points_, std::vector<std::vector<int>>& objectSortedID);
 
+
+    inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
 
     int GetNumofPoints() const { return points.size(); }
     int GetEpsilon() const {return eps; }
