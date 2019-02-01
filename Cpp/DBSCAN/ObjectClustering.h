@@ -16,20 +16,20 @@ class ObjectClustering{
     ~ObjectClustering() {};   // Original destructor for DBSCAN
     
     void RunObjClusTask();
-    void DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points);
-    void ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectContour);
+    int DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points);
+    void ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPtsID);
     std::vector<int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     // potential functions
-    void LabelObjects(std::vector<CPoint2D>& points_, std::vector<std::vector<int>>& objectSortedID);
+    void LabelObjects(std::vector<CPoint2D>& points, std::vector<std::vector<int> >& objectSortedID);
 
 
     inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
-    inline std::vector<Point2D> CalculateCenterPt (std::vector<std::vector<int>>& pointCloud);
+    inline void CalculateCenterPt (CPoint2D& currentPoint, Point2D& centerPoint, unsigned int weight);
 
     int GetNumofPoints() const { return points.size(); }
     int GetEpsilon() const {return eps; }
     const std::vector<CPoint2D>& GetPoints() const { return points; }
-    const std::vector<std::vector<int>>& GetObjectSortedID() const { return objectSortedID; }
+    const std::vector<std::vector<int> >& GetObjectSortedID() const { return objectSortedID; }
 
 
   private:
@@ -37,7 +37,7 @@ class ObjectClustering{
     float eps;  // Minimum distnce between points
 
     std::vector<CPoint2D> points;  // Data points
-    std::vector<std::vector<int>> objectSortedID; // Sorted Objects' ID
+    std::vector<std::vector<int> > objectSortedID; // Sorted Objects' ID
 };
 
 

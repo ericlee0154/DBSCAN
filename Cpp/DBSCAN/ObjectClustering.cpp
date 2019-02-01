@@ -10,13 +10,16 @@ ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector
 
 void ObjectClustering::RunObjClusTask()
 {
-    DBSCAN(minPts, eps, points);
+    int clusterSize = DBSCAN(minPts, eps, points);
+
+    // Initialize objectSortedID column: clusterSize counts from 1
+    objectSortedID.resize(clusterSize);
     // Take sorted outside. Because we may want to track object's ID.
     LabelObjects(points, objectSortedID);
 
 }
 
-void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points)
+int ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points)
 {
     std::vector<CPoint2D>::iterator iter;
     int currentClusterID = 1;
@@ -26,7 +29,7 @@ void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint
     {
         if (iter->clusterID == 0)
         {
-            std::vector<int> objectContour;    // Store objectContour
+            std::vector<int> objectBDPts;    // Object Boundary Points
             std::vector<int> neighborPtsIndex = RegionQuery(*iter);
 
             if ( neighborPtsIndex.size() < minPts - 1)  // minus 1 to remove counting center point
@@ -34,26 +37,41 @@ void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint
             else
             {
                 iter->clusterID = currentClusterID; // Assign current point's clusterID
-                ExpandCluster(&currentClusterID, neighborPtsIndex, objectContour);
+                ExpandCluster(&currentClusterID, neighborPtsIndex, objectBDPts);
                 currentClusterID = currentClusterID + 1;    // Finish current cluster, move to next cluster
             }
         }
     }   // End of for-loop
+
+    return currentClusterID;
 }
 
-/* 
-void ObjectClustering::LabelObjects(std::vector<CPoint2D>& points, std::vector<std::vector<int>>& objectSortedID)
+// May need to track ID. Currently just simple implementation
+// If no need to track ID. Put it into DBSCAN without compuatation waste.
+void ObjectClustering::LabelObjects(std::vector<CPoint2D>& points, std::vector<std::vector<int> >& objectSortedID)
 {
     std::vector<CPoint2D>::iterator iter;
+    int index = 0;
+
     for (iter = points.begin(); iter != points.end(); ++iter )
     {
-        if (iter)
+        if(iter->clusterID != -1)
+        {
+            objectSortedID[iter->clusterID-1].push_back(index);
+            ++index;
+        }
+        else
+        {
+            std::vector<int> noisePoint(1,index);
+            objectSortedID.push_back(noisePoint);
+            ++index;
+        }
     }
 }
-*/
 
 
-void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectContour)
+
+void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPts)
 {
     std::vector<int>::iterator iter_clus;
 
@@ -110,9 +128,8 @@ inline float ObjectClustering::CalculateDistance(CPoint2D& currentPoint, CPoint2
     return pow(currentPoint.x - targetPoint.x,2) + pow(currentPoint.y - targetPoint.y,2);
 };
 
-inline std::vector<Point2D> ObjectClustering::CalculateCenterPt(std::vector<std::vector<int>>& pointCloud)
+inline void ObjectClustering::CalculateCenterPt(CPoint2D& currentPoint, Point2D& centerPoint, unsigned int weight)
 {
-    std::vector<Point2D> centerPoint;
-    
-    return centerPoint;
+    centerPoint.x = (currentPoint.x + centerPoint.x * weight) / (weight + float(1));
+    centerPoint.y = (currentPoint.y + centerPoint.y * weight) / (weight + float(1));
 };
