@@ -9,7 +9,7 @@
 class Point2D;
 class CPoint2D;     // Clustered Point2D class
 
-/*
+
 class Point2D
 {
   public:
@@ -21,7 +21,7 @@ class Point2D
     Point2D(float x, float y);
     ~Point2D() {};
 };
-*/
+
 
 class CPoint2D
 {

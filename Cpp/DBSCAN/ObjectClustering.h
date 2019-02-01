@@ -17,13 +17,14 @@ class ObjectClustering{
     
     void RunObjClusTask();
     void DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points);
-    void ExpandCluster(int *clusterID, std::vector<int> neighborPtsIndex);
+    void ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectContour);
     std::vector<int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     // potential functions
     void LabelObjects(std::vector<CPoint2D>& points_, std::vector<std::vector<int>>& objectSortedID);
 
 
     inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
+    inline std::vector<Point2D> CalculateCenterPt (std::vector<std::vector<int>>& pointCloud);
 
     int GetNumofPoints() const { return points.size(); }
     int GetEpsilon() const {return eps; }

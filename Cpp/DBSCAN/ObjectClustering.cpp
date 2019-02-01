@@ -12,20 +12,21 @@ void ObjectClustering::RunObjClusTask()
 {
     DBSCAN(minPts, eps, points);
     // Take sorted outside. Because we may want to track object's ID.
+    LabelObjects(points, objectSortedID);
 
-
-    
 }
 
 void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points)
 {
     std::vector<CPoint2D>::iterator iter;
     int currentClusterID = 1;
+    
     // Visit each point in the data set
     for (iter = points.begin(); iter != points.end(); ++iter )
     {
         if (iter->clusterID == 0)
         {
+            std::vector<int> objectContour;    // Store objectContour
             std::vector<int> neighborPtsIndex = RegionQuery(*iter);
 
             if ( neighborPtsIndex.size() < minPts - 1)  // minus 1 to remove counting center point
@@ -33,22 +34,26 @@ void ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint
             else
             {
                 iter->clusterID = currentClusterID; // Assign current point's clusterID
-                ExpandCluster(&currentClusterID, neighborPtsIndex);
+                ExpandCluster(&currentClusterID, neighborPtsIndex, objectContour);
                 currentClusterID = currentClusterID + 1;    // Finish current cluster, move to next cluster
             }
         }
     }   // End of for-loop
-
 }
 
-void ObjectClustering::LabelObjects(std::vector<CPoint2D>& points_, std::vector<std::vector<int>>& objectSortedID)
+/* 
+void ObjectClustering::LabelObjects(std::vector<CPoint2D>& points, std::vector<std::vector<int>>& objectSortedID)
 {
-
+    std::vector<CPoint2D>::iterator iter;
+    for (iter = points.begin(); iter != points.end(); ++iter )
+    {
+        if (iter)
+    }
 }
+*/
 
 
-
-void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int> neighborPtsIndex)
+void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectContour)
 {
     std::vector<int>::iterator iter_clus;
 
@@ -103,4 +108,11 @@ std::vector<int> ObjectClustering::RegionQuery (CPoint2D currentPoint)
 inline float ObjectClustering::CalculateDistance(CPoint2D& currentPoint, CPoint2D& targetPoint)
 {
     return pow(currentPoint.x - targetPoint.x,2) + pow(currentPoint.y - targetPoint.y,2);
+};
+
+inline std::vector<Point2D> ObjectClustering::CalculateCenterPt(std::vector<std::vector<int>>& pointCloud)
+{
+    std::vector<Point2D> centerPoint;
+    
+    return centerPoint;
 };
