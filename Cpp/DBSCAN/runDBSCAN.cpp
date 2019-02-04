@@ -105,7 +105,7 @@ int main()
     std::vector<int> clusterGT = readData(rawPoints, eps, minPts);
 
     // constructor
-    ObjectClustering oc(minPts, eps, rawPoints);
+    ObjectClustering oc(minPts, eps, rawPoints, static_cast <ObjectClustering::eBoundingBoxType> (0) );
     
     double start, end;
     start = clock();

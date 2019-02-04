@@ -1,25 +1,28 @@
 #include "ObjectClustering.h"
 
 ObjectClustering::ObjectClustering(void) { }
-ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_):
+ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_, eBoundingBoxType bounding_box_type_):
     minPts(minPts_),
     eps(eps_), 
     points(points_),
-    objectSortedID () { }
+    objectSortedID (),
+    bounding_box_type (bounding_box_type_) { }
 
 
 void ObjectClustering::RunObjClusTask()
 {
-    int clusterSize = DBSCAN(minPts, eps, points);
+    int clusterSize = DBSCAN();
 
     // Initialize objectSortedID column: clusterSize counts from 1
     objectSortedID.resize(clusterSize);
     // Take sorted outside. Because we may want to track object's ID.
-    LabelObjects(points, objectSortedID);
+    LabelObjects(objectSortedID);
 
 }
 
-int ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2D>& points)
+
+
+int ObjectClustering::DBSCAN()
 {
     std::vector<CPoint2D>::iterator iter;
     int currentClusterID = 1;
@@ -42,13 +45,13 @@ int ObjectClustering::DBSCAN(unsigned int minPts, float eps, std::vector<CPoint2
             }
         }
     }   // End of for-loop
-
     return currentClusterID;
 }
 
 // May need to track ID. Currently just simple implementation
 // If no need to track ID. Put it into DBSCAN without compuatation waste.
-void ObjectClustering::LabelObjects(std::vector<CPoint2D>& points, std::vector<std::vector<int> >& objectSortedID)
+// Candidate: void TrackingLabelObjects()
+void ObjectClustering::LabelObjects( std::vector<std::vector<int> >& objectSortedID)
 {
     std::vector<CPoint2D>::iterator iter;
     int index = 0;
@@ -102,6 +105,27 @@ void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborP
     }   // Ending of for-loop
 };
 
+void ObjectClustering::ObjectsContour ()
+{
+    switch ( bounding_box_type )
+    {
+        case REC_VCS:
+            
+            break;
+
+        case MINIMUM_BOUNDING_REC:
+        
+            break;
+
+        case BOUNDARY_PTS:
+
+            break;
+
+        default:
+            break;
+    }
+};
+
 std::vector<int> ObjectClustering::RegionQuery (CPoint2D currentPoint)
 {
     std::vector<int> neighborPtsIndex;
@@ -128,8 +152,9 @@ inline float ObjectClustering::CalculateDistance(CPoint2D& currentPoint, CPoint2
     return pow(currentPoint.x - targetPoint.x,2) + pow(currentPoint.y - targetPoint.y,2);
 };
 
-inline void ObjectClustering::CalculateCenterPt(CPoint2D& currentPoint, Point2D& centerPoint, unsigned int weight)
+inline void ObjectClustering::CalculateCenterPt(CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight)
 {
     centerPoint.x = (currentPoint.x + centerPoint.x * weight) / (weight + float(1));
     centerPoint.y = (currentPoint.y + centerPoint.y * weight) / (weight + float(1));
+    weight = weight + 1;
 };
