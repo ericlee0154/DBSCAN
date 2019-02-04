@@ -126,6 +126,7 @@ void ObjectClustering::ObjectsContour ()
             // May use Template function
             float pInf = FLT_MAX;   // Assign float maximum number
             float nInf = -FLT_MAX;
+            int obj_index;
 
             std::vector<std::vector<int> >::iterator iter_row;
             std::vector<int>::iterator iter_cln;
@@ -136,7 +137,7 @@ void ObjectClustering::ObjectsContour ()
                 float y_max = nInf;
                 float y_min = pInf;
 
-                for (iter_cln = iter_row->begin(); iter_cln != iter_row->end(); ++iter_cln )
+                for (iter_cln = (*iter_row).begin(); iter_cln != (*iter_row).end(); ++iter_cln )
                 {
                     if (points[*iter_cln].x > x_max)
                         x_max = points[*iter_cln].x;
@@ -149,8 +150,14 @@ void ObjectClustering::ObjectsContour ()
 
                     if (points[*iter_cln].y > y_min)
                         y_min = points[*iter_cln].y;
-
                 }
+                // ISO
+                Point2D upper_left_pt(x_max, y_max);
+                Point2D lower_right_pt(x_min, y_min);
+                objectBBPts[obj_index].push_back(upper_left_pt);
+                objectBBPts[obj_index].push_back(lower_right_pt);
+
+                ++obj_index;
             }
             break;
         }
