@@ -6,7 +6,8 @@ ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector
     eps(eps_), 
     points(points_),
     objectSortedID (),
-    bounding_box_type (bounding_box_type_) { }
+    bounding_box_type (bounding_box_type_),
+    objectBBPts() { }
 
 
 void ObjectClustering::RunObjClusTask()
@@ -16,7 +17,10 @@ void ObjectClustering::RunObjClusTask()
     // Initialize objectSortedID column: clusterSize counts from 1
     objectSortedID.resize(clusterSize);
     // Take sorted outside. Because we may want to track object's ID.
-    LabelObjects(objectSortedID);
+    LabelObjects();
+    // Draw bounding box / minimum bunding box / boundary point
+    ObjectsContour();
+
 
 }
 
@@ -47,32 +51,6 @@ int ObjectClustering::DBSCAN()
     }   // End of for-loop
     return currentClusterID;
 }
-
-// May need to track ID. Currently just simple implementation
-// If no need to track ID. Put it into DBSCAN without compuatation waste.
-// Candidate: void TrackingLabelObjects()
-void ObjectClustering::LabelObjects( std::vector<std::vector<int> >& objectSortedID)
-{
-    std::vector<CPoint2D>::iterator iter;
-    int index = 0;
-
-    for (iter = points.begin(); iter != points.end(); ++iter )
-    {
-        if(iter->clusterID != -1)
-        {
-            objectSortedID[iter->clusterID-1].push_back(index);
-            ++index;
-        }
-        else
-        {
-            std::vector<int> noisePoint(1,index);
-            objectSortedID.push_back(noisePoint);
-            ++index;
-        }
-    }
-}
-
-
 
 void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPts)
 {
@@ -105,22 +83,86 @@ void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborP
     }   // Ending of for-loop
 };
 
+// May need to track ID. Currently just simple implementation
+// If no need to track ID. Put it into DBSCAN without compuatation waste.
+// Candidate: void TrackingLabelObjects()
+void ObjectClustering::LabelObjects ()
+{
+    std::vector<CPoint2D>::iterator iter;
+    int index = 0;
+
+    for (iter = points.begin(); iter != points.end(); ++iter )
+    {
+        if(iter->clusterID != -1)
+        {
+            objectSortedID[iter->clusterID-1].push_back(index);
+            ++index;
+        }
+        else
+        {
+            std::vector<int> noisePoint(1,index);
+            objectSortedID.push_back(noisePoint);
+            ++index;
+        }
+    }
+}
+
+
+// Currently brute-force; waiting for further design
+/*
+template <typename T>
+int main(){
+
+   int a = 0;
+   ObjectClustering::ObjectsContour<double>())
+}
+*/
 void ObjectClustering::ObjectsContour ()
 {
     switch ( bounding_box_type )
     {
         case REC_VCS:
-            
-            break;
+        {
+            // May use Template function
+            float pInf = FLT_MAX;   // Assign float maximum number
+            float nInf = -FLT_MAX;
 
-        case MINIMUM_BOUNDING_REC:
+            std::vector<std::vector<int> >::iterator iter_row;
+            std::vector<int>::iterator iter_cln;
+            for (iter_row = objectSortedID.begin(); iter_row != objectSortedID.end(); ++iter_row)
+            {
+                float x_max = nInf;
+                float x_min = pInf;
+                float y_max = nInf;
+                float y_min = pInf;
+
+                for (iter_cln = iter_row->begin(); iter_cln != iter_row->end(); ++iter_cln )
+                {
+                    if (points[*iter_cln].x > x_max)
+                        x_max = points[*iter_cln].x;
+
+                    if (points[*iter_cln].x < x_min)
+                        x_min = points[*iter_cln].x;
+
+                    if (points[*iter_cln].y > y_max)
+                        y_max = points[*iter_cln].y;
+
+                    if (points[*iter_cln].y > y_min)
+                        y_min = points[*iter_cln].y;
+
+                }
+            }
+            break;
+        }
         
+        case MINIMUM_BOUNDING_REC:
+        {
             break;
-
+        }
         case BOUNDARY_PTS:
-
+        {
             break;
-
+        }
         default:
             break;
     }

@@ -7,6 +7,8 @@
 
 #include "Geometry.h"
 
+#define FLT_MAX __FLT_MAX__
+
 
 class ObjectClustering{
   public:
@@ -29,12 +31,13 @@ class ObjectClustering{
     void ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPtsID);
     std::vector<int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     // potential functions
-    void LabelObjects(std::vector<std::vector<int> >& objectSortedID);
+    void LabelObjects();
     void ObjectsContour();
 
     inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
     inline void CalculateCenterPt (CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight);
 
+    // Call functions
     int GetNumofPoints() const { return points.size(); }
     int GetEpsilon() const {return eps; }
     const eBoundingBoxType GetBoundingBoxType() const {return bounding_box_type; }
@@ -50,6 +53,7 @@ class ObjectClustering{
 
     std::vector<CPoint2D> points;  // Data points
     std::vector<std::vector<int> > objectSortedID; // Sorted Objects' ID
+    std::vector<std::vector<Point2D> > objectBBPts;   // Return bounding boxes' points
 };
 
 
