@@ -18,12 +18,14 @@ void ObjectClustering::RunObjClusTask()
     objectSortedID.resize(clusterSize);
     // Take sorted outside. Because we may want to track object's ID.
     LabelObjects();
-    // Draw bounding box / minimum bunding box / boundary point
+
+    // Initialize objectBBPts (Bounding Box Points)
+    objectBBPts.resize(objectSortedID.size());
+    // Draw bounding box / minimum bunding box / boundary 
     ObjectsContour();
 
 
 }
-
 
 
 int ObjectClustering::DBSCAN()
@@ -49,7 +51,7 @@ int ObjectClustering::DBSCAN()
             }
         }
     }   // End of for-loop
-    return currentClusterID;
+    return (currentClusterID -1);
 }
 
 void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPts)
@@ -121,21 +123,20 @@ void ObjectClustering::ObjectsContour ()
 {
     switch ( bounding_box_type )
     {
-        case REC_VCS:
+        case REC_VCS:       // Case 0: Draw rectanglar bounding box based on current coordinate system axes
         {
             // May use Template function
-            float pInf = FLT_MAX;   // Assign float maximum number
-            float nInf = -FLT_MAX;
-            int obj_index;
+            int obj_index = 0;
 
             std::vector<std::vector<int> >::iterator iter_row;
             std::vector<int>::iterator iter_cln;
             for (iter_row = objectSortedID.begin(); iter_row != objectSortedID.end(); ++iter_row)
             {
-                float x_max = nInf;
-                float x_min = pInf;
-                float y_max = nInf;
-                float y_min = pInf;
+                // Initialization
+                float x_max = -FLT_MAX;
+                float x_min =  FLT_MAX;
+                float y_max = -FLT_MAX;
+                float y_min =  FLT_MAX;
 
                 for (iter_cln = (*iter_row).begin(); iter_cln != (*iter_row).end(); ++iter_cln )
                 {
@@ -148,21 +149,21 @@ void ObjectClustering::ObjectsContour ()
                     if (points[*iter_cln].y > y_max)
                         y_max = points[*iter_cln].y;
 
-                    if (points[*iter_cln].y > y_min)
+                    if (points[*iter_cln].y < y_min)
                         y_min = points[*iter_cln].y;
                 }
+
                 // ISO
                 Point2D upper_left_pt(x_max, y_max);
                 Point2D lower_right_pt(x_min, y_min);
                 objectBBPts[obj_index].push_back(upper_left_pt);
                 objectBBPts[obj_index].push_back(lower_right_pt);
-
                 ++obj_index;
             }
             break;
         }
         
-        case MINIMUM_BOUNDING_REC:
+        case MINIMUM_BOUNDING_REC:      // Case 1: Draw minimum rectangular bounding box of each object
         {
             break;
         }
@@ -172,6 +173,7 @@ void ObjectClustering::ObjectsContour ()
         }
         default:
             break;
+
     }
 };
 

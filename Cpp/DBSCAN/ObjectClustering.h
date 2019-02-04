@@ -58,4 +58,4 @@ class ObjectClustering{
 };
 
 
-#endif // _DBSCAN_H_
+#endif // _OBJECTCLUSTERING_H_

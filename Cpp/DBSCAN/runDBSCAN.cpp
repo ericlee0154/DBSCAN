@@ -88,14 +88,14 @@ void printResults(const std::vector<CPoint2D>& Points, int num_points, const std
             std::cout << ObjectSortedID[k][j] << ", ";
             j++;
         }
-        std::cout << "\n Compare to Bounding Box Points: ";
+        std::cout << "\nCompare to Bounding Box Points: ";
         int q = 0;
         while( q < ObjectBBPts[k].size())
         {
-            std::cout << ObjectBBPts[k][q].x << ", " << ObjectBBPts[k][q].y << std::endl;
+            std::cout << ObjectBBPts[k][q].x << ", " << ObjectBBPts[k][q].y << ". ";
             q++;
         }
-        std::cout <<"\n";
+        std::cout <<"\n\n";
 
         ++k;
     }
