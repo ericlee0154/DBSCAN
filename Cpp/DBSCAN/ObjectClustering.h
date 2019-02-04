@@ -39,10 +39,11 @@ class ObjectClustering{
 
     // Call functions
     int GetNumofPoints() const { return points.size(); }
-    int GetEpsilon() const {return eps; }
-    const eBoundingBoxType GetBoundingBoxType() const {return bounding_box_type; }
+    int GetEpsilon() const { return eps; }
+    const eBoundingBoxType GetBoundingBoxType() const { return bounding_box_type; }
     const std::vector<CPoint2D>& GetPoints() const { return points; }
     const std::vector<std::vector<int> >& GetObjectSortedID() const { return objectSortedID; }
+    const std::vector<std::vector<Point2D> >& GetObjectBoundingBoxPoints() const { return objectBBPts; }
 
 
   private:
