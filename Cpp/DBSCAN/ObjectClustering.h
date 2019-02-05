@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <math.h>
+//#include <stdint>
 
 #include "Geometry.h"
 
@@ -28,7 +29,7 @@ class ObjectClustering{
     
 
     void RunObjClusTask();
-    unsigned long long DBSCAN();
+    unsigned int DBSCAN();
     void ExpandCluster(const int& clusterID, std::vector<unsigned int>& neighborPtsIndex);
     std::vector<unsigned int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     // potential functions
@@ -39,7 +40,7 @@ class ObjectClustering{
     inline void CalculateCenterPt (const CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight);
 
     // Call functions
-    unsigned long long GetNumofPoints() const { return points.size(); }
+    unsigned int GetNumofPoints() const { return points.size(); }
     float GetEpsilon() const { return eps; }
     const eBoundingBoxType GetBoundingBoxType() const { return bounding_box_type; }
     const std::vector<CPoint2D>& GetPoints() const { return points; }
