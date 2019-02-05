@@ -1,12 +1,12 @@
 #include "ObjectClustering.h"
 
 ObjectClustering::ObjectClustering(void) { }
-ObjectClustering::ObjectClustering(unsigned int minPts_, float eps_, std::vector<CPoint2D> points_, eBoundingBoxType bounding_box_type_):
-    minPts(minPts_),
-    eps(eps_), 
-    points(points_),
+ObjectClustering::ObjectClustering(unsigned int minPts_ip, float eps_ip, std::vector<CPoint2D> points_ip, eBoundingBoxType bounding_box_type_ip):
+    minPts(minPts_ip),
+    eps(eps_ip), 
+    points(points_ip),
     objectSortedID (),
-    bounding_box_type (bounding_box_type_),
+    bounding_box_type (bounding_box_type_ip),
     objectBBPts() { }
 
 
@@ -38,15 +38,14 @@ int ObjectClustering::DBSCAN()
     {
         if (iter->clusterID == 0)
         {
-            std::vector<int> objectBDPts;    // Object Boundary Points
-            std::vector<int> neighborPtsIndex = RegionQuery(*iter);
+            std::vector<unsigned int> neighborPtsIndex = RegionQuery(*iter);
 
-            if ( neighborPtsIndex.size() < minPts - 1)  // minus 1 to remove counting center point
+            if ( neighborPtsIndex.size() < (minPts-1) )  // minus 1 to remove counting center point
                 iter->clusterID = -1;       // Noise Point
             else
             {
                 iter->clusterID = currentClusterID; // Assign current point's clusterID
-                ExpandCluster(&currentClusterID, neighborPtsIndex, objectBDPts);
+                ExpandCluster(&currentClusterID, neighborPtsIndex);
                 currentClusterID = currentClusterID + 1;    // Finish current cluster, move to next cluster
             }
         }
@@ -54,23 +53,24 @@ int ObjectClustering::DBSCAN()
     return (currentClusterID -1);
 }
 
-void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPts)
+void ObjectClustering::ExpandCluster(int *clusterID, std::vector<unsigned int>& neighborPtsIndex)
 {
-    std::vector<int>::iterator iter_clus;
+    std::vector<unsigned int>::iterator iter_clus;
 
     for (iter_clus = neighborPtsIndex.begin(); iter_clus != neighborPtsIndex.end(); ++iter_clus)
     {
         points.at(*iter_clus).clusterID = *clusterID;  // Assign cluster ID into neighbor points
     }
 
+    std::vector<unsigned int>::iterator iter_ext;
     // Assign current point into current cluster
-    for (int i = 0; i < neighborPtsIndex.size(); i++)
+    for (iter_ext = neighborPtsIndex.begin(); iter_ext != neighborPtsIndex.end(); ++iter_ext)
     {
-        std::vector<int> neighborPtsIndex_ext = RegionQuery(points.at(neighborPtsIndex[i]));
+        std::vector<unsigned int> neighborPtsIndex_ext = RegionQuery(points.at(neighborPtsIndex[iter_ext-neighborPtsIndex.begin()]));
 
-        if (neighborPtsIndex_ext.size() >= minPts -1)   // minus 1 to remove counting center point
+        if (neighborPtsIndex_ext.size() >= (minPts-1) )   // minus 1 to remove counting center point
         {
-            std::vector<int>::iterator iter_ext;
+            std::vector<unsigned int>::iterator iter_ext;
 
             for (iter_ext = neighborPtsIndex_ext.begin(); iter_ext != neighborPtsIndex_ext.end(); ++iter_ext)
             {
@@ -91,20 +91,17 @@ void ObjectClustering::ExpandCluster(int *clusterID, std::vector<int>& neighborP
 void ObjectClustering::LabelObjects ()
 {
     std::vector<CPoint2D>::iterator iter;
-    int index = 0;
 
     for (iter = points.begin(); iter != points.end(); ++iter )
     {
         if(iter->clusterID != -1)
         {
-            objectSortedID[iter->clusterID-1].push_back(index);
-            ++index;
+            objectSortedID[iter->clusterID-1].push_back(iter-points.begin());
         }
         else
         {
-            std::vector<int> noisePoint(1,index);
+            std::vector<unsigned int> noisePoint(1,iter-points.begin());
             objectSortedID.push_back(noisePoint);
-            ++index;
         }
     }
 }
@@ -126,17 +123,15 @@ void ObjectClustering::ObjectsContour ()
         case REC_VCS:       // Case 0: Draw rectanglar bounding box based on current coordinate system axes
         {
             // May use Template function
-            int obj_index = 0;
-
-            std::vector<std::vector<int> >::iterator iter_row;
-            std::vector<int>::iterator iter_cln;
+            std::vector<std::vector<unsigned int> >::iterator iter_row;
+            std::vector<unsigned int>::iterator iter_cln;
             for (iter_row = objectSortedID.begin(); iter_row != objectSortedID.end(); ++iter_row)
             {
                 // Initialization
-                float x_max = -FLT_MAX;
-                float x_min =  FLT_MAX;
-                float y_max = -FLT_MAX;
-                float y_min =  FLT_MAX;
+                float x_max = -FLT_MAX_NUM;
+                float x_min =  FLT_MAX_NUM;
+                float y_max = -FLT_MAX_NUM;
+                float y_min =  FLT_MAX_NUM;
 
                 for (iter_cln = (*iter_row).begin(); iter_cln != (*iter_row).end(); ++iter_cln )
                 {
@@ -156,9 +151,8 @@ void ObjectClustering::ObjectsContour ()
                 // ISO
                 Point2D upper_left_pt(x_max, y_max);
                 Point2D lower_right_pt(x_min, y_min);
-                objectBBPts[obj_index].push_back(upper_left_pt);
-                objectBBPts[obj_index].push_back(lower_right_pt);
-                ++obj_index;
+                objectBBPts[iter_row-objectSortedID.begin()].push_back(upper_left_pt);
+                objectBBPts[iter_row-objectSortedID.begin()].push_back(lower_right_pt);
             }
             break;
         }
@@ -177,23 +171,21 @@ void ObjectClustering::ObjectsContour ()
     }
 };
 
-std::vector<int> ObjectClustering::RegionQuery (CPoint2D currentPoint)
+std::vector<unsigned int> ObjectClustering::RegionQuery (CPoint2D currentPoint)
 {
-    std::vector<int> neighborPtsIndex;
+    std::vector<unsigned int> neighborPtsIndex;
     std::vector<CPoint2D>::iterator iter;
-    int index = 0;
 
     for (iter = points.begin(); iter != points.end(); ++iter)
     {
         // Not count current point
-        if (currentPoint.x != iter->x && currentPoint.y != iter->y)
+        if ( (currentPoint.x != iter->x) && (currentPoint.y != iter->y) )
         {
-            if (CalculateDistance(currentPoint, *iter) <= eps*eps)
+            if (CalculateDistance(currentPoint, *iter) <= (eps*eps) )
             {
-                neighborPtsIndex.push_back(index);
+                neighborPtsIndex.push_back(iter-points.begin());    // Store index
             }
         }
-        index = index + 1;
     }
     return neighborPtsIndex;
 };
@@ -205,7 +197,7 @@ inline float ObjectClustering::CalculateDistance(CPoint2D& currentPoint, CPoint2
 
 inline void ObjectClustering::CalculateCenterPt(CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight)
 {
-    centerPoint.x = (currentPoint.x + centerPoint.x * weight) / (weight + float(1));
-    centerPoint.y = (currentPoint.y + centerPoint.y * weight) / (weight + float(1));
+    centerPoint.x = (currentPoint.x + (centerPoint.x * weight) ) / (weight + float(1));
+    centerPoint.y = (currentPoint.y + (centerPoint.y * weight) ) / (weight + float(1));
     weight = weight + 1;
 };

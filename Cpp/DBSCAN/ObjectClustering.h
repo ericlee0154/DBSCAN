@@ -7,7 +7,7 @@
 
 #include "Geometry.h"
 
-#define FLT_MAX __FLT_MAX__
+#define FLT_MAX_NUM __FLT_MAX__
 
 
 class ObjectClustering{
@@ -28,8 +28,8 @@ class ObjectClustering{
 
     void RunObjClusTask();
     int DBSCAN();
-    void ExpandCluster(int *clusterID, std::vector<int>& neighborPtsIndex, std::vector<int>& objectBDPtsID);
-    std::vector<int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
+    void ExpandCluster(int *clusterID, std::vector<unsigned int>& neighborPtsIndex);
+    std::vector<unsigned int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     // potential functions
     void LabelObjects();
     void ObjectsContour();
@@ -38,22 +38,22 @@ class ObjectClustering{
     inline void CalculateCenterPt (CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight);
 
     // Call functions
-    int GetNumofPoints() const { return points.size(); }
-    int GetEpsilon() const { return eps; }
+    unsigned int GetNumofPoints() const { return points.size(); }
+    float GetEpsilon() const { return eps; }
     const eBoundingBoxType GetBoundingBoxType() const { return bounding_box_type; }
     const std::vector<CPoint2D>& GetPoints() const { return points; }
-    const std::vector<std::vector<int> >& GetObjectSortedID() const { return objectSortedID; }
+    const std::vector<std::vector<unsigned int> >& GetObjectSortedID() const { return objectSortedID; }
     const std::vector<std::vector<Point2D> >& GetObjectBoundingBoxPoints() const { return objectBBPts; }
 
 
   private:
     unsigned int minPts;    // Minimum points in a cluster
-    float eps;  // Minimum distnce between points
+    float eps;  // Minimum distance between points
 
     eBoundingBoxType bounding_box_type;   // Bounding box type
 
     std::vector<CPoint2D> points;  // Data points
-    std::vector<std::vector<int> > objectSortedID; // Sorted Objects' ID
+    std::vector<std::vector<unsigned int> > objectSortedID; // Sorted Objects' ID
     std::vector<std::vector<Point2D> > objectBBPts;   // Return bounding boxes' points
 };
 
