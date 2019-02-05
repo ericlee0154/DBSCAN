@@ -6,6 +6,7 @@
 /******************************
  * CLASS
  *****************************/
+namespace ds{
 class Point2D;
 class CPoint2D;     // Clustered Point2D class
 
@@ -39,6 +40,8 @@ class CPoint2D
     // float GetX () {return x;}
 
 };
+
+}
 
 
 #endif  // _GEOMETRY_H_

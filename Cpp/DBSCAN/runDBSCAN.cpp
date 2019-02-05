@@ -6,6 +6,7 @@
 
 #include "ObjectClustering.h"
 
+using namespace ds;
 // #define MINIMUM_POINTS 4         // Define minimum points: 4
 // #define EPSILON        0.75      // Define minimum distance: 0.2
 
@@ -45,7 +46,7 @@ std::vector<int> readData(std::vector<CPoint2D>& rawPoints, float &eps, unsigned
     return clusterGT;
 }
 
-void printResults(const std::vector<CPoint2D>& Points, int num_points, const std::vector<std::vector<int> >& ObjectSortedID, 
+void printResults(const std::vector<CPoint2D>& Points, int num_points, const std::vector<std::vector<unsigned int> >& ObjectSortedID, 
                 const std::vector<std::vector<Point2D> >& ObjectBBPts, std::vector<int> clusterGT)
 {
     int i = 0;

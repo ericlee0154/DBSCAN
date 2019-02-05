@@ -9,6 +9,7 @@
 
 #define FLT_MAX_NUM __FLT_MAX__
 
+namespace ds {    // Namespcae : Drivable Space
 
 class ObjectClustering{
   public:
@@ -28,14 +29,14 @@ class ObjectClustering{
 
     void RunObjClusTask();
     int DBSCAN();
-    void ExpandCluster(int *clusterID, std::vector<unsigned int>& neighborPtsIndex);
+    void ExpandCluster(const int& clusterID, std::vector<unsigned int>& neighborPtsIndex);
     std::vector<unsigned int> RegionQuery(CPoint2D currentPoint);       // Calculate neighbor points' indices
     // potential functions
     void LabelObjects();
     void ObjectsContour();
 
-    inline float CalculateDistance (CPoint2D& currentPoint, CPoint2D& targetPoint);
-    inline void CalculateCenterPt (CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight);
+    inline float CalculateDistance (const CPoint2D& currentPoint, const CPoint2D& targetPoint);
+    inline void CalculateCenterPt (const CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight);
 
     // Call functions
     unsigned int GetNumofPoints() const { return points.size(); }
@@ -57,5 +58,6 @@ class ObjectClustering{
     std::vector<std::vector<Point2D> > objectBBPts;   // Return bounding boxes' points
 };
 
+}
 
 #endif // _OBJECTCLUSTERING_H_
