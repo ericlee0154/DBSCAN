@@ -178,7 +178,7 @@ std::vector<unsigned int> ds::ObjectClustering::RegionQuery (CPoint2D currentPoi
     for (iter = points.begin(); iter != points.end(); ++iter)
     {
         // Not count current point
-        if ( (currentPoint.x != iter->x) && (currentPoint.y != iter->y) )
+        if ( ( (currentPoint.x) != (iter->x) ) && ( (currentPoint.y) != (iter->y) ) )
         {
             if (CalculateDistance(currentPoint, *iter) <= (eps*eps) )
             {
