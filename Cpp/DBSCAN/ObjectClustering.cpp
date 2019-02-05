@@ -12,7 +12,7 @@ ds::ObjectClustering::ObjectClustering(unsigned int minPts_ip, float eps_ip, std
 
 void ds::ObjectClustering::RunObjClusTask()
 {
-    int clusterSize = DBSCAN();
+    unsigned int clusterSize = DBSCAN();
 
     // Initialize objectSortedID column: clusterSize counts from 1
     objectSortedID.resize(clusterSize);
@@ -28,10 +28,10 @@ void ds::ObjectClustering::RunObjClusTask()
 }
 
 
-int ds::ObjectClustering::DBSCAN()
+unsigned int ds::ObjectClustering::DBSCAN()
 {
     std::vector<CPoint2D>::iterator iter;
-    int currentClusterID = 1;
+    unsigned int currentClusterID = 1;
     
     // Visit each point in the data set
     for (iter = points.begin(); iter != points.end(); ++iter )
