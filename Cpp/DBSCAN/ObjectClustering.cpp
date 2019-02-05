@@ -28,7 +28,7 @@ void ds::ObjectClustering::RunObjClusTask()
 }
 
 
-unsigned int ds::ObjectClustering::DBSCAN()
+unsigned long long ds::ObjectClustering::DBSCAN()
 {
     std::vector<CPoint2D>::iterator iter;
     unsigned int currentClusterID = 1;
@@ -46,7 +46,7 @@ unsigned int ds::ObjectClustering::DBSCAN()
             {
                 iter->clusterID = currentClusterID; // Assign current point's clusterID
                 ExpandCluster(currentClusterID, neighborPtsIndex);
-                currentClusterID = currentClusterID + 1;    // Finish current cluster, move to next cluster
+                currentClusterID = currentClusterID + 1u;    // Finish current cluster, move to next cluster
             }
         }
     }   // End of for-loop
@@ -191,12 +191,12 @@ std::vector<unsigned int> ds::ObjectClustering::RegionQuery (CPoint2D currentPoi
 
 inline float ds::ObjectClustering::CalculateDistance(const CPoint2D& currentPoint, const CPoint2D& targetPoint)
 {
-    return pow(currentPoint.x - targetPoint.x,2) + pow(currentPoint.y - targetPoint.y,2);
+    return (currentPoint.x - targetPoint.x)*(currentPoint.x - targetPoint.x) + (currentPoint.y - targetPoint.y)*(currentPoint.y - targetPoint.y);
 };
 
 inline void ds::ObjectClustering::CalculateCenterPt(const CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight)
 {
     centerPoint.x = (currentPoint.x + (centerPoint.x * weight) ) / (weight + float(1));
     centerPoint.y = (currentPoint.y + (centerPoint.y * weight) ) / (weight + float(1));
-    weight = weight + 1;
+    weight = weight + 1u;
 };
