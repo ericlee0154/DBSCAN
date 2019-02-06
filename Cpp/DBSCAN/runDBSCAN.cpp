@@ -126,6 +126,7 @@ int main()
     // result of DBSCAN algorithm
     printResults(oc.GetPoints(), oc.GetNumofPoints(), oc.GetObjectSortedID(),oc.GetObjectBoundingBoxPoints(),clusterGT);
     std::cout << "Computation time " << (end - start)/CLOCKS_PER_SEC << " s" << std::endl;
+    std::cout << "Computation Frequency " << CLOCKS_PER_SEC/(end - start) << " Hz" << std::endl;
 
     return 0;
 }

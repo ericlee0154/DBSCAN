@@ -9,8 +9,8 @@ from sklearn.preprocessing import StandardScaler
 
 # ###########################CUSTOMIZATION#####################################
 # Generate sample data
-centers = [[1, 1], [-1, -1], [1, -1]]
-X, labels_true = make_blobs(n_samples=500, centers=centers, cluster_std=0.4,
+centers = [[1, 1], [-1, -1], [1, -1], [-1, 1], [3,4]]
+X, labels_true = make_blobs(n_samples=200, centers=centers, cluster_std=0.3,
                             random_state=0)
 
 X = StandardScaler().fit_transform(X)
