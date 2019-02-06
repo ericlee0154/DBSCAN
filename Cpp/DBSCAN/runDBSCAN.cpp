@@ -30,7 +30,8 @@ std::vector<int> readData(std::vector<CPoint2D>& rawPoints, float &eps, unsigned
     {
         float x, y;
         fscanf(stream, "%f, %f, %d, \n", &x, &y, &cluster);
-        p->SetValue(x, y);
+        p->SetX(x);
+        p->SetY(y);
         if (cluster != -1)
         {
             cluster = cluster + 1;

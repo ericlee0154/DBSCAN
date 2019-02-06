@@ -3,7 +3,7 @@
 ds::ObjectClustering::ObjectClustering(void): minPts(0U), eps(0.0F), bounding_box_type(REC_VCS) { }
 ds::ObjectClustering::ObjectClustering(unsigned int minPts_ip, float eps_ip, std::vector<CPoint2D> points_ip, eBoundingBoxType bounding_box_type_ip):
     minPts(minPts_ip),
-    eps(eps_ip), 
+    eps(eps_ip),
     points(points_ip),
     objectSortedID (),
     bounding_box_type (bounding_box_type_ip),
@@ -15,14 +15,14 @@ void ds::ObjectClustering::RunObjClusTask()
     unsigned int clusterSize = DBSCAN();
 
     // Initialize objectSortedID column: clusterSize counts from 1
-    objectSortedID.resize(static_cast<int64_t>(clusterSize));
+    objectSortedID.resize(static_cast<unsigned int64_t>(clusterSize));
     // Take sorted outside. Because we may want to track object's ID.
     LabelObjects();
 
     // Initialize objectBBPts (Bounding Box Points)
     objectBBPts.resize(objectSortedID.size());
     // Draw bounding box / minimum bunding box / boundary 
-    ObjectsContour();
+    DrawObjectsContour();
 
 
 }
@@ -31,7 +31,7 @@ void ds::ObjectClustering::RunObjClusTask()
 unsigned int ds::ObjectClustering::DBSCAN()
 {
     std::vector<CPoint2D>::iterator iter;
-    int currentClusterID = 1;
+    unsigned int currentClusterID = 1U;
     
     // Visit each point in the data set
     for (iter = points.begin(); iter != points.end(); ++iter )
@@ -40,12 +40,12 @@ unsigned int ds::ObjectClustering::DBSCAN()
         {
             std::vector<unsigned int> neighborPtsIndex = RegionQuery(*iter);
 
-            if ( neighborPtsIndex.size() < static_cast<int64_t>(minPts-1U) )  // minus 1 to remove counting center point
+            if ( static_cast<unsigned int32_t>(neighborPtsIndex.size()) < (minPts-1U) )  // minus 1 to remove counting center point
                 { iter->SetClusterID(-1); }       // Noise Point
             else
             {
-                iter->SetClusterID(currentClusterID); // Assign current point's clusterID
-                ExpandCluster(currentClusterID, neighborPtsIndex);
+                iter->SetClusterID(static_cast<signed int>(currentClusterID)); // Assign current point's clusterID
+                ExpandCluster(static_cast<signed int>(currentClusterID), neighborPtsIndex);
                 ++currentClusterID;    // Finish current cluster, move to next cluster
             }
         }
@@ -59,24 +59,24 @@ void ds::ObjectClustering::ExpandCluster(const int& clusterID, std::vector<unsig
 
     for (iter_clus = neighborPtsIndex.begin(); iter_clus != neighborPtsIndex.end(); ++iter_clus)
     {
-        points.at( static_cast<int64_t>(*iter_clus) ).SetClusterID(clusterID);  // Assign cluster ID into neighbor points
+        points.at( static_cast<unsigned int64_t>(*iter_clus) ).SetClusterID(clusterID);  // Assign cluster ID into neighbor points
     }
 
     // Assign current point into current cluster
-    for (int index = 0; index < neighborPtsIndex.size(); ++index)
+    for (int index = 0; static_cast<unsigned int64_t>(index) < neighborPtsIndex.size(); ++index)
     {
-        std::vector<unsigned int> neighborPtsIndex_ext = RegionQuery(points.at( static_cast<int64_t>(neighborPtsIndex[index]) ));
+        std::vector<unsigned int> neighborPtsIndex_ext = RegionQuery(points.at( static_cast<unsigned int64_t>(neighborPtsIndex[index]) ));
 
-        if (neighborPtsIndex_ext.size() >= static_cast<int64_t>(minPts-1U) )   // minus 1 to remove counting center point
+        if (static_cast<unsigned int32_t>(neighborPtsIndex_ext.size()) >= (minPts-1U) )   // minus 1 to remove counting center point
         {
             std::vector<unsigned int>::iterator iter_ext;
 
             for (iter_ext = neighborPtsIndex_ext.begin(); iter_ext != neighborPtsIndex_ext.end(); ++iter_ext)
             {
-                if (points.at( static_cast<int64_t>(*iter_ext) ).GetClusterID() == 0 )
+                if (points.at( static_cast<unsigned int64_t>(*iter_ext) ).GetClusterID() == 0 )
                 {
                     neighborPtsIndex.push_back(*iter_ext);
-                    points.at( static_cast<int64_t>(*iter_ext) ).SetClusterID(clusterID);
+                    points.at( static_cast<unsigned int64_t>(*iter_ext) ).SetClusterID(clusterID);
                 }
             }   // Finish union
         }
@@ -94,11 +94,12 @@ void ds::ObjectClustering::LabelObjects ()
     {
         if(iter->GetClusterID() != -1)
         {
-            objectSortedID[iter->GetClusterID()-1].push_back(iter-points.begin());
+            unsigned int clusAbsID = static_cast<unsigned int>(std::abs(iter->GetClusterID()-1));
+            objectSortedID[clusAbsID].push_back(static_cast<unsigned int>(iter-points.begin()) );
         }
         else
         {
-            std::vector<unsigned int> noisePoint(1,static_cast<unsigned int>(iter-points.begin()) );
+            std::vector<unsigned int> noisePoint(1U,static_cast<unsigned int>(iter-points.begin()) );
             objectSortedID.push_back(noisePoint);
         }
     }
@@ -114,7 +115,7 @@ int main(){
    ObjectClustering::ObjectsContour<double>())
 }
 */
-void ds::ObjectClustering::ObjectsContour ()
+void ds::ObjectClustering::DrawObjectsContour ()
 {
     switch ( bounding_box_type )
     {
@@ -168,15 +169,17 @@ void ds::ObjectClustering::ObjectsContour ()
     }
 };
 
-std::vector<unsigned int> ds::ObjectClustering::RegionQuery (CPoint2D& currentPoint)
+std::vector<unsigned int> ds::ObjectClustering::RegionQuery (const CPoint2D& currentPoint)
 {
     std::vector<unsigned int> neighborPtsIndex;
     std::vector<CPoint2D>::iterator iter;
 
     for (iter = points.begin(); iter != points.end(); ++iter)
     {
+        float tolerance = 1e-03F;
         // Not count current point
-        if ( ( (currentPoint.GetX()) != (iter->GetX()) ) && ( (currentPoint.GetY() ) != (iter->GetY()) ) )
+        if(  (  ( (currentPoint.GetX()-iter->GetX())>tolerance) || ( (currentPoint.GetX()-iter->GetX())<-tolerance)  )  &&
+             (  ( (currentPoint.GetY()-iter->GetY())>tolerance) || ( (currentPoint.GetY()-iter->GetY())<-tolerance)  )  )
         {
             if (CalculateDistance(currentPoint, *iter) <= (eps*eps) )
             {
@@ -192,8 +195,9 @@ inline float ds::ObjectClustering::CalculateDistance(const CPoint2D& currentPoin
     return ( (currentPoint.GetX() - targetPoint.GetX())*(currentPoint.GetX() - targetPoint.GetX()) ) + ( (currentPoint.GetY() - targetPoint.GetY())*(currentPoint.GetY() - targetPoint.GetY()) );
 };
 
-inline void ds::ObjectClustering::CalculateCenterPt(const CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight)
+inline void ds::ObjectClustering::CalculateCenterPt(const CPoint2D& currentPoint, Point2D& centerPoint, float& weight)
 {
-    centerPoint.SetValue(    ((currentPoint.GetX() + (centerPoint.GetX() * weight) ) / (weight + static_cast<float>(1) )),   ((currentPoint.GetY() + (centerPoint.GetY() * weight) ) / (weight + static_cast<float>(1)))   );
+    centerPoint.SetX(   ((currentPoint.GetX() + (centerPoint.GetX() * weight) ) / (weight + 1.0F)) );
+    centerPoint.SetY(   ((currentPoint.GetY() + (centerPoint.GetY() * weight) ) / (weight + 1.0F)) );
     ++weight;
 };

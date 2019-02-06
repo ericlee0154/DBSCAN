@@ -22,7 +22,8 @@ class Point2D
     Point2D(float x, float y);
     ~Point2D() {};
 
-    void SetValue(float x_ip, float y_ip);
+    void SetX(float x_ip);
+    void SetY(float y_ip);
 
     float GetX() const { return x; }
     float GetY() const { return y; }
@@ -42,7 +43,8 @@ class CPoint2D
     CPoint2D(float x, float y, int clusterID, bool visited);
     ~CPoint2D() {};
 
-    void SetValue(float x_ip, float y_ip);
+    void SetX(float x_ip);
+    void SetY(float y_ip);
     void SetClusterID(int clusterID_ip);
     void SetVisited(bool visited_ip);
 

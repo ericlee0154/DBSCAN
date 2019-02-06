@@ -1,10 +1,9 @@
 #ifndef _OBJECTCLUSTERING_H_
-#define _OBJECTCLUSTER_H_
+#define _OBJECTCLUSTERING_H_
 
 #include <vector>
 #include <algorithm>
 #include <math.h>
-//#include <stdint>
 
 #include "Geometry.h"
 
@@ -31,16 +30,16 @@ class ObjectClustering{
     void RunObjClusTask();
     unsigned int DBSCAN();
     void ExpandCluster(const int& clusterID, std::vector<unsigned int>& neighborPtsIndex);
-    std::vector<unsigned int> RegionQuery(CPoint2D& currentPoint);       // Calculate neighbor points' indices
+    std::vector<unsigned int> RegionQuery(const CPoint2D& currentPoint);       // Calculate neighbor points' indices
     // potential functions
     void LabelObjects();
-    void ObjectsContour();
+    void DrawObjectsContour();
 
-    inline float CalculateDistance (const CPoint2D& currentPoint, const CPoint2D& targetPoint);
-    inline void CalculateCenterPt (const CPoint2D& currentPoint, Point2D& centerPoint, unsigned int& weight);
+    static inline float CalculateDistance (const CPoint2D& currentPoint, const CPoint2D& targetPoint);
+    static inline void CalculateCenterPt (const CPoint2D& currentPoint, Point2D& centerPoint, float& weight);
 
     // Call functions
-    unsigned int GetNumofPoints() const { return points.size(); }
+    unsigned int GetNumofPoints() const { return static_cast<unsigned int32_t>(points.size()); }
     float GetEpsilon() const { return eps; }
     const eBoundingBoxType GetBoundingBoxType() const { return bounding_box_type; }
     const std::vector<CPoint2D>& GetPoints() const { return points; }
