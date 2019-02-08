@@ -16,7 +16,7 @@ class ObjectClustering{
     enum eBoundingBoxType
     {
       REC_VCS = 0,                // Maximum and minimum points to form bounding box
-      MINIMUM_BOUNDING_REC,       // Minimum bounding rectangle
+      MINIMUM_BOUNDING_REC,       // Minimum bounding rectangle (MBR)
       BOUNDARY_PTS                // Boundary points of objects
 
     };  // The enum indicate the bounding bo type 

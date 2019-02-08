@@ -156,7 +156,7 @@ void ds::ObjectClustering::DrawObjectsContour ()
             break;
         }
         
-        case MINIMUM_BOUNDING_REC:      // Case 1: Draw minimum rectangular bounding box of each object
+        case MINIMUM_BOUNDING_REC:      // Case 1: Draw minimum rectangule bounding box of each object
         {
             break;
         }
