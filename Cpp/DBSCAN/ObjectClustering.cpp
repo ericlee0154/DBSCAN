@@ -178,8 +178,7 @@ std::vector<unsigned int> ds::ObjectClustering::RegionQuery (const CPoint2D& cur
     {
         float tolerance = 1e-03F;
         // Not count current point
-        if(  (  ( (currentPoint.GetX()-iter->GetX())>tolerance) || ( (currentPoint.GetX()-iter->GetX())<-tolerance)  )  &&
-             (  ( (currentPoint.GetY()-iter->GetY())>tolerance) || ( (currentPoint.GetY()-iter->GetY())<-tolerance)  )  )
+        if( CalculateDistance(currentPoint, *iter) > (tolerance*tolerance) )
         {
             if (CalculateDistance(currentPoint, *iter) <= (eps*eps) )
             {
