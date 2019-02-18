@@ -38,7 +38,7 @@ unsigned int ds::ObjectClustering::DBSCAN()
     {
         if (iter->GetClusterID() == 0)
         {
-            std::vector<unsigned int> neighborPtsIndex = RegionQuery(*iter);
+            std::vector<unsigned int> neighborPtsIndex = RegionQuery(*iter, iter-points.begin());
 
             if ( static_cast<unsigned int32_t>(neighborPtsIndex.size()) < (minPts-1U) )  // minus 1 to remove counting center point
                 { iter->SetClusterID(-1); }       // Noise Point
@@ -65,7 +65,7 @@ void ds::ObjectClustering::ExpandCluster(const int& clusterID, std::vector<unsig
     // Assign current point into current cluster
     for (int index = 0; static_cast<unsigned int64_t>(index) < neighborPtsIndex.size(); ++index)
     {
-        std::vector<unsigned int> neighborPtsIndex_ext = RegionQuery(points.at( static_cast<unsigned int64_t>(neighborPtsIndex[index]) ));
+        std::vector<unsigned int> neighborPtsIndex_ext = RegionQuery(points.at( static_cast<unsigned int64_t>(neighborPtsIndex[index]) ), neighborPtsIndex[index]);
 
         if (static_cast<unsigned int32_t>(neighborPtsIndex_ext.size()) >= (minPts-1U) )   // minus 1 to remove counting center point
         {
@@ -169,7 +169,7 @@ void ds::ObjectClustering::DrawObjectsContour ()
     }
 };
 
-std::vector<unsigned int> ds::ObjectClustering::RegionQuery (const CPoint2D& currentPoint)
+std::vector<unsigned int> ds::ObjectClustering::RegionQuery (const CPoint2D& currentPoint, const int currentPointIndex)
 {
     std::vector<unsigned int> neighborPtsIndex;
     std::vector<CPoint2D>::iterator iter;
@@ -178,12 +178,9 @@ std::vector<unsigned int> ds::ObjectClustering::RegionQuery (const CPoint2D& cur
     {
         float tolerance = 1e-03F;
         // Not count current point
-        if( CalculateDistance(currentPoint, *iter) > (tolerance*tolerance) )
+        if  (  currentPointIndex != (iter-points.begin()) && CalculateDistance(currentPoint, *iter) <= (eps*eps) )
         {
-            if (CalculateDistance(currentPoint, *iter) <= (eps*eps) )
-            {
                 neighborPtsIndex.push_back( static_cast<unsigned int>(iter-points.begin()) );    // Store index
-            }
         }
     }
     return neighborPtsIndex;

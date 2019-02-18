@@ -30,7 +30,7 @@ class ObjectClustering{
     void RunObjClusTask();
     unsigned int DBSCAN();
     void ExpandCluster(const int& clusterID, std::vector<unsigned int>& neighborPtsIndex);
-    std::vector<unsigned int> RegionQuery(const CPoint2D& currentPoint);       // Calculate neighbor points' indices
+    std::vector<unsigned int> RegionQuery(const CPoint2D& currentPoint, const int currentPointIndex);       // Calculate neighbor points' indices
     // potential functions
     void LabelObjects();
     void DrawObjectsContour();
