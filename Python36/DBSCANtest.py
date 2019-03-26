@@ -9,8 +9,8 @@ from sklearn.preprocessing import StandardScaler
 
 # ###########################CUSTOMIZATION#####################################
 # Generate sample data
-centers = [[1, 1], [-1, -1], [1, -1], [-1, 1], [3,4]]
-X, labels_true = make_blobs(n_samples=200, centers=centers, cluster_std=0.3,
+centers = [[1, 1], [-1, -1], [1, -1]]
+X, labels_true = make_blobs(n_samples=500, centers=centers, cluster_std=0.3,
                             random_state=0)
 
 X = StandardScaler().fit_transform(X)
@@ -19,7 +19,7 @@ X = StandardScaler().fit_transform(X)
 # Compute DBSCAN
 
 # db = DBSCAN(eps=/desired/, min_samples=/desired/).fit(X)
-db = DBSCAN(eps=0.2, min_samples=4).fit(X)
+db = DBSCAN(eps=0.25, min_samples=4).fit(X)
 # #############################################################################
 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
 core_samples_mask[db.core_sample_indices_] = True

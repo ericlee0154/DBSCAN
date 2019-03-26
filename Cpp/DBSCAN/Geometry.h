@@ -6,7 +6,6 @@
 /******************************
  * CLASS
  *****************************/
-namespace ds{
 class Point2D;
 class CPoint2D;     // Clustered Point2D class
 
@@ -46,16 +45,13 @@ class CPoint2D
     void SetX(float x_ip);
     void SetY(float y_ip);
     void SetClusterID(int clusterID_ip);
-    void SetVisited(bool visited_ip);
 
     // float GetX () {return x;}
     float GetX() const { return x; }
     float GetY() const { return y; }
     int GetClusterID() const { return clusterID; }
-    bool GetVisited() const { return visited; }
 };
 
-}
 
 
 #endif  // _GEOMETRY_H_

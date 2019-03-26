@@ -4,9 +4,8 @@
 
 #include <time.h>
 
-#include "ObjectClustering.h"
+#include "ObjectCluster.h"
 
-using namespace ds;
 // #define MINIMUM_POINTS 4         // Define minimum points: 4
 // #define EPSILON        0.75      // Define minimum distance: 0.2
 
@@ -24,7 +23,6 @@ std::vector<int> readData(std::vector<CPoint2D>& rawPoints, float &eps, unsigned
 
     CPoint2D *p = (CPoint2D *)std::calloc(num_points, sizeof(CPoint2D));
     p->SetClusterID(0);
-    p->SetVisited(false);
 
     while (i < num_points)
     {
@@ -114,14 +112,12 @@ int main()
     unsigned int minPts;
     // read point data
     std::vector<int> clusterGT = readData(rawPoints, eps, minPts);
-
-    // constructor
-    ObjectClustering oc(minPts, eps, rawPoints, static_cast <ObjectClustering::eBoundingBoxType> (0) );
     
     double start, end;
     start = clock();
     // main loop
-    oc.RunObjClusTask();
+    // constructor
+    ObjectCluster oc(minPts, eps, rawPoints);
     end = clock();
 
     // result of DBSCAN algorithm
