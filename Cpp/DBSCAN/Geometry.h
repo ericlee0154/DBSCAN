@@ -9,10 +9,10 @@
 class Point2D;
 class CPoint2D;     // Clustered Point2D class
 
-/*
+
 class Point2D
 {
-  public:
+  private:
     float x;
     float y;
 
@@ -20,12 +20,18 @@ class Point2D
     Point2D(void);
     Point2D(float x, float y);
     ~Point2D() {};
+
+    void SetX(float x_ip);
+    void SetY(float y_ip);
+
+    float GetX() const { return x; }
+    float GetY() const { return y; }
 };
-*/
+
 
 class CPoint2D
 {
-  public:
+  private:
     float x;
     float y;
     int clusterID;      // -1: noise points
@@ -36,9 +42,16 @@ class CPoint2D
     CPoint2D(float x, float y, int clusterID, bool visited);
     ~CPoint2D() {};
 
-    // float GetX () {return x;}
+    void SetX(float x_ip);
+    void SetY(float y_ip);
+    void SetClusterID(int clusterID_ip);
 
+    // float GetX () {return x;}
+    float GetX() const { return x; }
+    float GetY() const { return y; }
+    int GetClusterID() const { return clusterID; }
 };
+
 
 
 #endif  // _GEOMETRY_H_
