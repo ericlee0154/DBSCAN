@@ -4,11 +4,12 @@
 
 #include <time.h>
 
-#include "ObjectCluster.h"
+#include "DBSCAN.h"
 
 // #define MINIMUM_POINTS 4         // Define minimum points: 4
 // #define EPSILON        0.75      // Define minimum distance: 0.2
 
+namespace geo{
 
 std::vector<int> readData(std::vector<CPoint2D>& rawPoints, float &eps, unsigned int &minPts)
 {
@@ -45,13 +46,13 @@ std::vector<int> readData(std::vector<CPoint2D>& rawPoints, float &eps, unsigned
     return clusterGT;
 }
 
-void printResults(const std::vector<CPoint2D>& Points, int num_points, const std::vector<std::vector<unsigned int> >& ObjectSortedID, 
-                const std::vector<std::vector<Point2D> >& ObjectBBPts, std::vector<int> clusterGT)
+void printResults(const std::vector<CPoint2D>& Points, std::vector<int> clusterGT)
 {
     int i = 0;
     int cluster_check = 0;
     int numofCluster = 0;
     int noisePoints = 0;
+    int num_points = Points.size();
     int index;
     printf("Number of points: %u\n"
         " x     y     cluster_id\n"
@@ -80,6 +81,7 @@ void printResults(const std::vector<CPoint2D>& Points, int num_points, const std
     }
     int k = 0;
     
+    /*
     while (k < ObjectSortedID.size())
     {
         int j = 0;
@@ -99,14 +101,17 @@ void printResults(const std::vector<CPoint2D>& Points, int num_points, const std
 
         ++k;
     }
+    */
     std::cout << "Number of Clusters: " << numofCluster << std::endl;
     std::cout << "Number of Noise Points: " << noisePoints << std::endl;
     std::cout << "Cluster Check: " << cluster_check << ".  Zero means no difference. Total Points: " << num_points << std::endl;
 }
 
+} // namespace geo
+
 int main()
 {    
-    std::vector<CPoint2D> rawPoints;
+    std::vector<geo::CPoint2D> rawPoints;
 
     float eps;
     unsigned int minPts;
@@ -117,13 +122,14 @@ int main()
     start = clock();
     // main loop
     // constructor
-    ObjectCluster oc(minPts, eps, rawPoints);
+    DBSCAN dbscan(minPts, eps, rawPoints);
     end = clock();
 
     // result of DBSCAN algorithm
-    printResults(oc.GetPoints(), oc.GetNumofPoints(), oc.GetObjectSortedID(),oc.GetObjectBoundingBoxPoints(),clusterGT);
+    printResults(dbscan.GetPoints(), clusterGT);
     std::cout << "Computation time " << (end - start)/CLOCKS_PER_SEC << " s" << std::endl;
     std::cout << "Computation Frequency " << CLOCKS_PER_SEC/(end - start) << " Hz" << std::endl;
 
     return 0;
 }
+

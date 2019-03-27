@@ -53,6 +53,7 @@ namespace geo{  // namespace geo (GEOMETRY)
       friend Point2D operator+(const Point2D& p1, const Point2D& p2);
       friend Point2D operator-(const Point2D& p1, const Point2D& p2);
 
+      double CalDistance(const Point2D& p2) const;
 
       void SetX(double x_input) { x = x_input; }
       void SetY(double y_input) { y = y_input; }
@@ -71,7 +72,7 @@ namespace geo{  // namespace geo (GEOMETRY)
 
     public:
       Point3D(void);
-      Point3D(double x, double y);
+      Point3D(double x, double y, double z);
       virtual ~Point3D() = default;
 
       // Define general Point3D's operators
@@ -80,7 +81,8 @@ namespace geo{  // namespace geo (GEOMETRY)
       friend Point3D operator+(const Point3D& p1, const Point3D& p2);
       friend Point3D operator-(const Point3D& p1, const Point3D& p2);
 
-
+      double CalDistance(const Point3D& p2) const;
+      
       void SetX(double x_input) { x = x_input; }
       void SetY(double y_input) { y = y_input; }
       void SetZ(double z_input) { z = z_input; }
@@ -103,7 +105,7 @@ namespace geo{  // namespace geo (GEOMETRY)
       CPoint2D(int cluster_id_input);
       virtual ~CPoint2D() = default;
 
-      void SetClusterID(int cluster_id_input);
+      void SetClusterID(int cluster_id_input) { cluster_id = cluster_id_input; }
 
       int GetClusterID() const { return cluster_id; }
   };
@@ -126,8 +128,8 @@ namespace geo{  // namespace geo (GEOMETRY)
       friend bool operator==(const Polynomial3& poly1, const Polynomial3& poly2);
       friend bool operator!=(const Polynomial3& poly1, const Polynomial3& poly2);
 
-      double GetFuncValue(const double& x_input);
-      Polynomial3 GetDerivative(const Polynomial3& poly0);
+      double GetFuncValue(const double& x_input) { return (a0 + a1*x_input + a2*x_input*x_input + a3*x_input*x_input*x_input); }
+      Polynomial3 GetDerivative(const Polynomial3& poly0) { return ( Polynomial3(a1, a2*2.0, a3*3.0, 0.0) ); }
       
       double GetA0() const { return a0; }
       double GetA1() const { return a1; }
@@ -180,15 +182,6 @@ namespace geo{  // namespace geo (GEOMETRY)
   } // namespace vec
 
 } // namespace geo
-
-
-
-
-
-
-
-
-
 
 
 #endif  // GEOMETRY_H

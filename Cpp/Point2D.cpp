@@ -25,4 +25,9 @@ namespace geo{
   {
     return ( Point2D(p1.GetX()-p2.GetX(), p1.GetY()-p2.GetY()) );
   }
+
+  double Point2D::CalDistance(const Point2D& p2) const
+  {
+    return ( sqrt((x - p2.GetX())*(x - p2.GetX()) + (y - p2.GetY())*(y - p2.GetY()) ) );
+  }
 } // namespace geo
